@@ -234,67 +234,6 @@
 				this.points.push(new Vector((-1 * this.proportion), (-8 * this.proportion)));
 				this.points.push(new Vector((-10 * this.proportion), (-8 * this.proportion)));
 				this.points.push(new Vector((-10 * this.proportion), (-10 * this.proportion)));
-
-
-
-
-				/*this.points.push(new Vector(this.position.x + (10 * this.proportion), this.position.y - (10 * this.proportion)));
-				this.points.push(new Vector(this.position.x + (10 * this.proportion), this.position.y - (8 * this.proportion)));
-				this.points.push(new Vector(this.position.x + (1 * this.proportion), this.position.y - (8 * this.proportion)));
-				this.points.push(new Vector(this.position.x + (1 * this.proportion), this.position.y - (4 * this.proportion)));
-				this.points.push(new Vector(this.position.x + (2 * this.proportion), this.position.y - (4 * this.proportion)));
-				this.points.push(new Vector(this.position.x + (4 * this.proportion), this.position.y - (2 * this.proportion)));
-				this.points.push(new Vector(this.position.x + (6 * this.proportion), this.position.y - (2 * this.proportion)));
-				this.points.push(new Vector(this.position.x + (6 * this.proportion), this.position.y - (1 * this.proportion)));
-				this.points.push(new Vector(this.position.x + (4 * this.proportion), this.position.y - (1 * this.proportion)));
-				this.points.push(new Vector(this.position.x + (4 * this.proportion), this.position.y + (1 * this.proportion)));
-				this.points.push(new Vector(this.position.x + (6 * this.proportion), this.position.y + (1 * this.proportion)));
-				this.points.push(new Vector(this.position.x + (6 * this.proportion), this.position.y + (2 * this.proportion)));
-				this.points.push(new Vector(this.position.x + (4 * this.proportion), this.position.y + (2 * this.proportion)));
-				this.points.push(new Vector(this.position.x + (2 * this.proportion), this.position.y + (4 * this.proportion)));
-				this.points.push(new Vector(this.position.x + (1 * this.proportion), this.position.y + (4 * this.proportion)));
-				this.points.push(new Vector(this.position.x + (1 * this.proportion), this.position.y + (8 * this.proportion)));
-				this.points.push(new Vector(this.position.x + (10 * this.proportion), this.position.y + (8 * this.proportion)));
-				this.points.push(new Vector(this.position.x + (10 * this.proportion), this.position.y + (10 * this.proportion)));
-				this.points.push(new Vector(this.position.x - (10 * this.proportion), this.position.y + (10 * this.proportion)));
-				this.points.push(new Vector(this.position.x - (10 * this.proportion), this.position.y + (8 * this.proportion)));
-				this.points.push(new Vector(this.position.x - (1 * this.proportion), this.position.y + (8 * this.proportion)));
-				this.points.push(new Vector(this.position.x - (1 * this.proportion), this.position.y + (4 * this.proportion)));
-				this.points.push(new Vector(this.position.x - (2 * this.proportion), this.position.y + (4 * this.proportion)));
-
-
-				this.points.push(new Vector(this.position.x - (4 * this.proportion), this.position.y + (2 * this.proportion)));
-				this.points.push(new Vector(this.position.x - (4 * this.proportion), this.position.y - (2 * this.proportion)));
-				this.points.push(new Vector(this.position.x - (2 * this.proportion), this.position.y - (4 * this.proportion)));
-	
-
-				this.points.push(new Vector(this.position.x - (1 * this.proportion), this.position.y - (4 * this.proportion)));
-				this.points.push(new Vector(this.position.x - (1 * this.proportion), this.position.y - (8 * this.proportion)));
-				this.points.push(new Vector(this.position.x - (10 * this.proportion), this.position.y - (8 * this.proportion)));
-				this.points.push(new Vector(this.position.x - (10 * this.proportion), this.position.y - (10 * this.proportion)));
-				this.points.push(new Vector(this.position.x + (10 * this.proportion), this.position.y - (10 * this.proportion)));
-
-				//this.points.push(new Vector(this.position.x - (8 * this.proportion), this.position.y - (10 * this.proportion)));
-				//this.points.push(new Vector(this.position.x - (10 * this.proportion), this.position.y + (10 * this.proportion)));
-				//this.points.push(new Vector(this.position.x - (10 * this.proportion), this.position.y - (10 * this.proportion)));
-*/
-				/*var xTip = this.xCenter + Math.cos(this.angle * Math.PI/180) * (this.radius);
-				var yTip = this.yCenter - Math.sin(this.angle * Math.PI/180) * (this.radius);
-				var shipBaseCenterXPnt = this.xCenter - Math.cos(this.angle) * this.radius;
-				var shipBaseCenterYPnt = this.yCenter + Math.sin(this.angle) * this.radius;
-				var halfBaseShipLength = this.radius * (2 - Math.sqrt(2.5));
-				var leftWingAngle = (Math.PI/2) + this.angle * Math.PI/180;
-				var rightWingAngle = leftWingAngle;              		//The angle is the same but for geometry purposes was included
-				var leftWingXPnt = shipBaseCenterXPnt + Math.cos(leftWingAngle) * (halfBaseShipLength);
-				var leftWingYPnt = shipBaseCenterYPnt - Math.sin(leftWingAngle) * (halfBaseShipLength);
-				var rightWingXPnt = shipBaseCenterXPnt - Math.cos(rightWingAngle) * (halfBaseShipLength);
-				var rightWingYPnt = shipBaseCenterYPnt + Math.sin(rightWingAngle) * (halfBaseShipLength);
-
-				this.points.push(new Vector(xTip, yTip));
-				this.points.push(new Vector(leftWingXPnt, leftWingYPnt));
-				this.points.push(new Vector(rightWingXPnt, rightWingYPnt));
-				this.points.push(new Vector(xTip, yTip));							 // including all geometry points including back to the start for printing purposes
-*/
 			};	
 		
 			Ship.prototype = Object.create(GameObject.prototype);
