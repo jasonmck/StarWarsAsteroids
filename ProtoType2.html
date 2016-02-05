@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<script src="js/simpleGame.js"></script>
+		
+		<style>
+		body {
+			background: url(http://www.drodd.com/images10/space-wallpaper13.jpg) left top repeat;
+			margin: 0;
+			overflow: hidden;
+		}
+	</style>
+	</head>
+	<body>
+	<div style="display:none">
+	<img id = "tie_fighter" src = "img/TieFighter.png" height = "35px" width = "35px">
+	<img id = "mill_falcon" src = "img/Millenium Falcon2.png" height = "35px" width = "35px">
+	<img id = "asteroid1" src = "img/Asteroid1.png" height = "42px" width = "51px">
+	<img id = "asteroid2" src = "img/Asteroid2.png" height = "42px" width = "51px">
+	<img id = "asteroid3" src = "img/Asteroid3.png" height = "42px" width = "51px">
+
+	</div>
+	
+	<!--<h3> &#8592 &#8594 = Rotate Ship &emsp;&emsp;&emsp;&emsp;&#8593;= Move&emsp;&emsp;&emsp;&emsp;&#8595; = Stop &emsp;&emsp;&emsp;&emsp;Hold Spacebar = Turbo</h3>-->
+		<canvas id = "myCanvas" style = ""></canvas>
+		<script>
+
+			var Vector = function(x,y) 
+			{
+				if (typeof x === 'number')
+					this.x = x;
+				else 
+					this.x = 0;
+
+				if (typeof y === 'number')
+					this.y = y;
+				else
+					this.y = 0;
+			}
+
+			var GameObject = function(position, radius, angle, velocity)
+			{
+				this.position = position || new Vector();
+				this.angle = angle;
+				this.velocity = velocity || new Vector();
+				this.radius = radius || 20;
+				this.points = [];
+
+			}
+
+			GameObject.prototype.update = function(){
+
+				//console.log(this.velocity.x);
+				//console.log(this.velocity.y);
+
+				this.position.x += this.velocity.x;
+				this.position.y += this.velocity.y;
+
+				if (this.position.x < -this.radius)
+					this.position.x += c.width + 2 * this.radius;
+				
+
+				if (this.position.x > (c.width + this.radius))
+					this.position.x -= c.width + 2 * this.radius;
+
+				if (this.position.y > (c.height + this.radius))
+					this.position.y -= c.height + 2 * this.radius;
+
+				if (this.position.y < (-this.radius))
+					this.position.y += c.height + 2 * this.radius;
+
+	//			console.log(this.position.x);
+	//			console.log(this.position.y);
+
+	//			console.log(this.velocity.y);
+
+			}
+
+			GameObject.prototype.print = function(){
+
+
+				context.save();
+				
+				
+
+				context.translate(this.position.x, this.position.y);
+
+				//console.log('context.translate(' + this.position.x + ', ' + this.position.y + ');');
+				context.rotate(-this.angle * Math.PI / 180);
+
+				//console.log('context.rotate(-' + this.angle + ' * Math.PI / 180)');
+				//context.translate(-this.position.x, -this.position.y);
+
+
+				//console.log('context.translate(-' + this.position.x + ', -' + this.position.y + ');');
+				if (this instanceof Ship)
+				{
+					context.drawImage(millFalconImage, -100, -100, 200, 200);	
+					//context.drawImage(tieFighterImage, -30, -30, 60, 60);		//TO CHANGE BETWEEN MILLENIUM FALCON AND TIEFIGHTER SHIPS
+				}
+				else if (this instanceof Asteroid)
+					context.drawImage(this.image, -40, -40, 80, 80);
+				
+
+				else 
+					{
+						context.beginPath();
+				context.moveTo(this.points[0].x, this.points[0].y);
+				for (var i = 1; i < this.points.length; i++)
+				{
+					context.lineTo(this.points[i].x, this.points[i].y);
+				}
+				context.closePath();
+				context.lineWidth = 1;
+
+				if (this.textureImg)
+				{
+					var pat = context.createPattern(this.textureImg, "repeat");
+					context.fillStyle = pat;
+					context.fill();
+				}
+				else
+				context.fillStyle = '#FFFFFF';
+				context.fill();
+			}
+
+
+				//context.stroke();
+
+
+				context.restore()
+
+				
+			}
+
+			GameObject.prototype.rotate = function(degrees) {
+				this.angle += degrees ;	
+			}
+
+			$('html').keyup(function(e){
+				if (e.keyCode == 37)
+					Spaceship.CCWRotateFlag = false;
+				
+
+				if (e.keyCode == 39) 
+					Spaceship.CWRotateFlag = false;
+
+				if (e.keyCode == 38){
+					Spaceship.accelerationFlag = false;
+				}
+
+					
+
+			});
+
+			$('html').keydown(function(e){
+
+				if (e.keyCode == 37)
+					Spaceship.CCWRotateFlag = true;
+
+
+				if (e.keyCode == 39)
+					Spaceship.CWRotateFlag = true;
+
+				if (e.keyCode == 32)
+				{
+					Spaceship.fire();
+				}
+
+				if (e.keyCode == 38)
+				{
+					Spaceship.accelerationFlag = true;
+					//tieFighterSound.play();
+				}
+
+				/*	
+				if (e.keyCode == 40)
+					spaceShip1.accelerationFlag = false;
+					
+
+				if (e.keyCode == 32)
+					spaceShip1.turboFlagOn = true;	
+*/
+
+			});
+
+			var Ship = function(position, radius, angle, velocity)
+			{
+
+				GameObject.apply(this, arguments);
+
+				CWRotateFlag = false;
+				CCWRotateFlag = false;
+				accelerationFlag = false;
+
+				this.accelerationRate = .08;
+				this.xCenter = position.x;
+				this.yCenter = position.y;;
+				this.angle = angle;
+				this.radius = radius;
+				this.proportion = radius / 20;
+
+
+
+				this.points.push(new Vector((-10 * this.proportion), (-10 * this.proportion)));
+				this.points.push(new Vector((10 * this.proportion), (-10 * this.proportion)));
+				this.points.push(new Vector((10 * this.proportion), (-8 * this.proportion)));
+				this.points.push(new Vector((1 * this.proportion), (-8 * this.proportion)));
+				this.points.push(new Vector((1 * this.proportion), (-4 * this.proportion)));
+				this.points.push(new Vector((2 * this.proportion), (-4 * this.proportion)));
+				this.points.push(new Vector((4 * this.proportion), (-2 * this.proportion)));
+				this.points.push(new Vector((6 * this.proportion), (-2 * this.proportion)));
+				this.points.push(new Vector((6 * this.proportion), (-1 * this.proportion)));
+				this.points.push(new Vector((4 * this.proportion), (-1 * this.proportion)));
+				this.points.push(new Vector((4 * this.proportion), (1 * this.proportion)));
+				this.points.push(new Vector((6 * this.proportion), (1 * this.proportion)));
+				this.points.push(new Vector((6 * this.proportion), (2 * this.proportion)));
+				this.points.push(new Vector((4 * this.proportion), (2 * this.proportion)));
+				this.points.push(new Vector((2 * this.proportion), (4 * this.proportion)));
+				this.points.push(new Vector((1 * this.proportion), (4 * this.proportion)));
+				this.points.push(new Vector((1 * this.proportion), (8 * this.proportion)));
+				this.points.push(new Vector((10 * this.proportion), (8 * this.proportion)));
+				this.points.push(new Vector((10 * this.proportion), (10 * this.proportion)));
+				this.points.push(new Vector((-10 * this.proportion), (10 * this.proportion)));
+				this.points.push(new Vector((-10 * this.proportion), (8 * this.proportion)));
+				this.points.push(new Vector((-1 * this.proportion), (8 * this.proportion)));
+				this.points.push(new Vector((-1 * this.proportion), (4 * this.proportion)));
+				this.points.push(new Vector((-2 * this.proportion), (4 * this.proportion)));
+				this.points.push(new Vector((-4 * this.proportion), (2 * this.proportion)));
+				this.points.push(new Vector((-4 * this.proportion), (-2 * this.proportion)));
+				this.points.push(new Vector((-2 * this.proportion), (-4 * this.proportion)));
+				this.points.push(new Vector((-1 * this.proportion), (-4 * this.proportion)));
+				this.points.push(new Vector((-1 * this.proportion), (-8 * this.proportion)));
+				this.points.push(new Vector((-10 * this.proportion), (-8 * this.proportion)));
+				this.points.push(new Vector((-10 * this.proportion), (-10 * this.proportion)));
+
+
+
+
+				/*this.points.push(new Vector(this.position.x + (10 * this.proportion), this.position.y - (10 * this.proportion)));
+				this.points.push(new Vector(this.position.x + (10 * this.proportion), this.position.y - (8 * this.proportion)));
+				this.points.push(new Vector(this.position.x + (1 * this.proportion), this.position.y - (8 * this.proportion)));
+				this.points.push(new Vector(this.position.x + (1 * this.proportion), this.position.y - (4 * this.proportion)));
+				this.points.push(new Vector(this.position.x + (2 * this.proportion), this.position.y - (4 * this.proportion)));
+				this.points.push(new Vector(this.position.x + (4 * this.proportion), this.position.y - (2 * this.proportion)));
+				this.points.push(new Vector(this.position.x + (6 * this.proportion), this.position.y - (2 * this.proportion)));
+				this.points.push(new Vector(this.position.x + (6 * this.proportion), this.position.y - (1 * this.proportion)));
+				this.points.push(new Vector(this.position.x + (4 * this.proportion), this.position.y - (1 * this.proportion)));
+				this.points.push(new Vector(this.position.x + (4 * this.proportion), this.position.y + (1 * this.proportion)));
+				this.points.push(new Vector(this.position.x + (6 * this.proportion), this.position.y + (1 * this.proportion)));
+				this.points.push(new Vector(this.position.x + (6 * this.proportion), this.position.y + (2 * this.proportion)));
+				this.points.push(new Vector(this.position.x + (4 * this.proportion), this.position.y + (2 * this.proportion)));
+				this.points.push(new Vector(this.position.x + (2 * this.proportion), this.position.y + (4 * this.proportion)));
+				this.points.push(new Vector(this.position.x + (1 * this.proportion), this.position.y + (4 * this.proportion)));
+				this.points.push(new Vector(this.position.x + (1 * this.proportion), this.position.y + (8 * this.proportion)));
+				this.points.push(new Vector(this.position.x + (10 * this.proportion), this.position.y + (8 * this.proportion)));
+				this.points.push(new Vector(this.position.x + (10 * this.proportion), this.position.y + (10 * this.proportion)));
+				this.points.push(new Vector(this.position.x - (10 * this.proportion), this.position.y + (10 * this.proportion)));
+				this.points.push(new Vector(this.position.x - (10 * this.proportion), this.position.y + (8 * this.proportion)));
+				this.points.push(new Vector(this.position.x - (1 * this.proportion), this.position.y + (8 * this.proportion)));
+				this.points.push(new Vector(this.position.x - (1 * this.proportion), this.position.y + (4 * this.proportion)));
+				this.points.push(new Vector(this.position.x - (2 * this.proportion), this.position.y + (4 * this.proportion)));
+
+
+				this.points.push(new Vector(this.position.x - (4 * this.proportion), this.position.y + (2 * this.proportion)));
+				this.points.push(new Vector(this.position.x - (4 * this.proportion), this.position.y - (2 * this.proportion)));
+				this.points.push(new Vector(this.position.x - (2 * this.proportion), this.position.y - (4 * this.proportion)));
+	
+
+				this.points.push(new Vector(this.position.x - (1 * this.proportion), this.position.y - (4 * this.proportion)));
+				this.points.push(new Vector(this.position.x - (1 * this.proportion), this.position.y - (8 * this.proportion)));
+				this.points.push(new Vector(this.position.x - (10 * this.proportion), this.position.y - (8 * this.proportion)));
+				this.points.push(new Vector(this.position.x - (10 * this.proportion), this.position.y - (10 * this.proportion)));
+				this.points.push(new Vector(this.position.x + (10 * this.proportion), this.position.y - (10 * this.proportion)));
+
+				//this.points.push(new Vector(this.position.x - (8 * this.proportion), this.position.y - (10 * this.proportion)));
+				//this.points.push(new Vector(this.position.x - (10 * this.proportion), this.position.y + (10 * this.proportion)));
+				//this.points.push(new Vector(this.position.x - (10 * this.proportion), this.position.y - (10 * this.proportion)));
+*/
+				/*var xTip = this.xCenter + Math.cos(this.angle * Math.PI/180) * (this.radius);
+				var yTip = this.yCenter - Math.sin(this.angle * Math.PI/180) * (this.radius);
+				var shipBaseCenterXPnt = this.xCenter - Math.cos(this.angle) * this.radius;
+				var shipBaseCenterYPnt = this.yCenter + Math.sin(this.angle) * this.radius;
+				var halfBaseShipLength = this.radius * (2 - Math.sqrt(2.5));
+				var leftWingAngle = (Math.PI/2) + this.angle * Math.PI/180;
+				var rightWingAngle = leftWingAngle;              		//The angle is the same but for geometry purposes was included
+				var leftWingXPnt = shipBaseCenterXPnt + Math.cos(leftWingAngle) * (halfBaseShipLength);
+				var leftWingYPnt = shipBaseCenterYPnt - Math.sin(leftWingAngle) * (halfBaseShipLength);
+				var rightWingXPnt = shipBaseCenterXPnt - Math.cos(rightWingAngle) * (halfBaseShipLength);
+				var rightWingYPnt = shipBaseCenterYPnt + Math.sin(rightWingAngle) * (halfBaseShipLength);
+
+				this.points.push(new Vector(xTip, yTip));
+				this.points.push(new Vector(leftWingXPnt, leftWingYPnt));
+				this.points.push(new Vector(rightWingXPnt, rightWingYPnt));
+				this.points.push(new Vector(xTip, yTip));							 // including all geometry points including back to the start for printing purposes
+*/
+			};	
+		
+			Ship.prototype = Object.create(GameObject.prototype);
+			Ship.prototype.constructor = Ship;
+
+			Ship.prototype.accelerate = function() {
+
+		//		console.log(Math.sin(this.angle * (Math.PI/180)) * this.accelerationRate);
+		//		console.log(Math.cos(this.angle * (Math.PI/180)) * this.accelerationRate);
+
+		//		console.log(Math.cos(this.angle * (Math.PI/360)));
+		//		console.log(Math.sin(this.angle * (Math.PI/360)));
+
+			if (Math.sqrt(Math.pow(this.velocity.x, 2) + Math.pow(this.velocity.y, 2)) < 5)
+			{
+
+				this.velocity.x += Math.cos(this.angle * Math.PI / 180) * this.accelerationRate;
+				this.velocity.y -= Math.sin(this.angle * Math.PI / 180) * this.accelerationRate;
+			}
+/*
+			else {
+				if (this.velocity.x > this.velocity.y)
+					this.velocity.x -= .1;
+				else if (this.velocity.y > this.velocity.x)
+					this.velocity.y -= .1;
+			}
+*/			//console.log(this.velocity.x);
+		//	console.log(this.velocity.y);
+	
+			}
+
+			Ship.prototype.update = function(){
+				GameObject.prototype.update.apply(this, arguments);
+
+				this.velocity.x -= this.velocity.x * .004;
+				this.velocity.y -= this.velocity.y * .004;
+
+				for (var j = 1; j < gameObjects.length; j++)
+				{
+					if (gameObjects[j] instanceof Asteroid)
+					{
+						var xDistanceApart = this.position.x - gameObjects[j].position.x;
+						var yDistanceApart = this.position.y - gameObjects[j].position.y;
+						var totalDistanceApart = Math.sqrt(Math.pow(xDistanceApart, 2) + Math.pow(yDistanceApart, 2));
+
+						if (totalDistanceApart < gameObjects[j].radius + this.radius -  15)
+						{
+							gameActive = false;
+						}
+
+					}
+				}
+
+			}
+
+			Ship.prototype.fire = function(){
+
+				new Bullet (
+					this.position,
+					this.angle,
+					10
+					);
+
+			}
+
+			var Asteroid = function(position, velocity, rotationAmount) {
+
+				GameObject.apply(this, arguments);
+
+				this.rotationAmount = rotationAmount;
+				this.position = position;
+				this.radius = 50;
+				this.angle = 0;
+				this.velocity = velocity;
+				this.minDistanceFromCenter = 25;
+				this.maxDistanceFromCenter = 40;
+				
+				this.image = asteroidImages[Math.floor(Math.random() * (2 - 0 + 1))];
+				console.log(this.image);
+				//this.textureImg = document.getElementById('asteroid_texture');
+
+				for (var j = 0; j <= (2*Math.PI); j += Math.PI/8)
+				{
+					var randomNumber =  Math.floor(Math.random() *  (this.maxDistanceFromCenter - this.minDistanceFromCenter) + this.minDistanceFromCenter);
+					this.points.push(new Vector(Math.cos(this.angle + j) * Math.floor(Math.random() *  (this.maxDistanceFromCenter - this.minDistanceFromCenter) + this.minDistanceFromCenter), Math.sin(this.angle + j) * randomNumber));
+
+				}
+
+			
+
+
+				
+			}
+
+			Asteroid.prototype = Object.create(GameObject.prototype);
+			Asteroid.prototype.constructor = Asteroid;
+			Asteroid.prototype.initializePoints = function () {
+
+			}
+
+
+			Asteroid.prototype.update = function(){
+				GameObject.prototype.update.apply(this, arguments);
+				this.rotate(this.rotationAmount);
+			}
+
+			var Bullet = function(position, angle, velocity)
+			{
+				GameObject.apply(this.arguments);
+				this.position = position;
+				this.radius = 10;
+			}
+
+			Bullet.prototype = Object.create(GameObject.prototype);
+			Bullet.prototype.constructor = Bullet;
+
+			initializeGameObjects = function() {
+
+				gameObjects = [];
+
+				this.Spaceship = new Ship (
+				new Vector(c.width / 2 , c.height / 2),		//position
+			    35,											//radius
+				90,											//angle
+				new Vector (0 , 0)							//velocity
+				);
+
+				gameObjects.push(Spaceship);
+
+
+				for (var i = 0; i < 6; i++) 				//Loop to create asteroids
+				{
+
+					this.gameAsteroid = new Asteroid(
+						new Vector (Math.random() * c.width, Math.random() * c.height),
+						new Vector ((Math.random() * 1) - .5, (Math.random() * 1) - .5),
+						(Math.random() - .5)
+					);
+				//	console.log(this.gameAsteroid.rotationAmount);
+					gameObjects.push(gameAsteroid);	
+				}
+				//console.log(gameObjects);
+
+
+
+			}
+
+			updateGameObjects = function() {
+				if (Spaceship.CWRotateFlag == true)
+					Spaceship.rotate(-2.5);
+					
+
+				if (Spaceship.CCWRotateFlag == true)
+					Spaceship.rotate(2.5);
+
+				if (Spaceship.accelerationFlag == true)
+					Spaceship.accelerate();
+
+				for (var i = 0; i < gameObjects.length; i++){
+					gameObjects[i].update();
+				}
+			}
+
+
+			printGameObjects = function() {
+				context.clearRect(0, 0, c.width, c.height);
+				for (var i = 0; i < gameObjects.length; i++){
+					gameObjects[i].print();
+				//	console.log(gameObjects[i]);
+				}
+			}
+
+			gameloop = function(){
+				if (gameActive){
+					updateGameObjects();
+					printGameObjects();
+					setTimeout(gameloop, 7);
+				}
+			};
+			asteroidImages = [];
+			var gameActive = true;
+			var millFalconImage = document.getElementById('mill_falcon');
+			var tieFighterImage = document.getElementById('tie_fighter');
+			var asteroid1Image = document.getElementById('asteroid1');
+			var asteroid2Image = document.getElementById('asteroid2');
+			var asteroid3Image = document.getElementById('asteroid3');
+			asteroidImages.push(asteroid1Image);
+			asteroidImages.push(asteroid2Image);
+			asteroidImages.push(asteroid3Image);
+			tieFighterSound = new Sound("tie_fighter.mp3");
+			var c = document.getElementById("myCanvas");
+			c.width = window.innerWidth;
+			c.height = window.innerHeight;
+			var context = c.getContext("2d");
+
+			initializeGameObjects();
+			
+
+
+			gameloop();
+
+			//gameloop();
+
+			
+
+
+
+
+		
+
+
+
+
+		</script>
+	</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

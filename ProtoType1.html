@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	</head>
+	<body>
+	<h3> &#8592 &#8594 = Rotate Ship &emsp;&emsp;&emsp;&emsp;&#8593;= Move&emsp;&emsp;&emsp;&emsp;&#8595; = Stop &emsp;&emsp;&emsp;&emsp;Hold Spacebar = Turbo</h3>
+		<canvas id = "myCanvas" style = " border:solid black 20px"></canvas>
+		<script>
+
+			$('html').keyup(function(e){
+				if (e.keyCode == 37)
+					spaceShip1.CCWRotateFlag = false;
+
+				if (e.keyCode == 39) 
+					spaceShip1.CWRotateFlag = false;
+
+				if (e.keyCode == 32)
+					spaceShip1.turboFlagOn = false;
+
+			});
+
+			$('html').keydown(function(e){
+
+				if (e.keyCode == 16)
+					{
+						
+
+					}
+
+				if (e.keyCode == 37)
+					spaceShip1.CCWRotateFlag = true;
+				//	spaceShip1.angle += (Math.PI/30);
+
+				if (e.keyCode == 39)
+					spaceShip1.CWRotateFlag = true;
+				//	spaceShip1.angle -= (Math.PI/30);
+
+				if (e.keyCode == 38)
+					spaceShip1.accelerationFlag = true;
+					
+				if (e.keyCode == 40)
+					spaceShip1.accelerationFlag = false;
+					
+
+				if (e.keyCode == 32)
+					spaceShip1.turboFlagOn = true;	
+					
+			});
+
+			var asteroid = function(xCenter, yCenter, angle)
+			{
+				this.xCenter = xCenter;
+				this.yCenter = yCenter;
+				this.angle = angle;
+				this.minDistanceFromCenter = 25;
+				this.maxDistanceFromCenter = 40;
+				this.randNumber1 = Math.floor(Math.random() *  (this.maxDistanceFromCenter - this.minDistanceFromCenter) + this.minDistanceFromCenter);
+				this.randNumber2 = Math.floor(Math.random() *  (this.maxDistanceFromCenter - this.minDistanceFromCenter) + this.minDistanceFromCenter);
+				this.randNumber3 = Math.floor(Math.random() *  (this.maxDistanceFromCenter - this.minDistanceFromCenter) + this.minDistanceFromCenter);
+				this.randNumber4 = Math.floor(Math.random() *  (this.maxDistanceFromCenter - this.minDistanceFromCenter) + this.minDistanceFromCenter);
+				this.randNumber5 = Math.floor(Math.random() *  (this.maxDistanceFromCenter - this.minDistanceFromCenter) + this.minDistanceFromCenter);
+				this.randNumber6 = Math.floor(Math.random() *  (this.maxDistanceFromCenter - this.minDistanceFromCenter) + this.minDistanceFromCenter);
+				this.randNumber7 = Math.floor(Math.random() *  (this.maxDistanceFromCenter - this.minDistanceFromCenter) + this.minDistanceFromCenter);
+				this.randNumber8 = Math.floor(Math.random() *  (this.maxDistanceFromCenter - this.minDistanceFromCenter) + this.minDistanceFromCenter);
+				this.randNumber9 = Math.floor(Math.random() *  (this.maxDistanceFromCenter - this.minDistanceFromCenter) + this.minDistanceFromCenter);
+				this.randNumber10 = Math.floor(Math.random() *  (this.maxDistanceFromCenter - this.minDistanceFromCenter) + this.minDistanceFromCenter);
+				this.randNumber11 = Math.floor(Math.random() *  (this.maxDistanceFromCenter - this.minDistanceFromCenter) + this.minDistanceFromCenter);
+				this.randNumber12 = Math.floor(Math.random() *  (this.maxDistanceFromCenter - this.minDistanceFromCenter) + this.minDistanceFromCenter);
+				this.randNumber13 = Math.floor(Math.random() *  (this.maxDistanceFromCenter - this.minDistanceFromCenter) + this.minDistanceFromCenter);
+				this.randNumber14 = Math.floor(Math.random() *  (this.maxDistanceFromCenter - this.minDistanceFromCenter) + this.minDistanceFromCenter);
+				this.randNumber15 = Math.floor(Math.random() *  (this.maxDistanceFromCenter - this.minDistanceFromCenter) + this.minDistanceFromCenter);
+				this.randNumber16 = Math.floor(Math.random() *  (this.maxDistanceFromCenter - this.minDistanceFromCenter) + this.minDistanceFromCenter);
+
+				this.CCWRotate = function(rotationAmount){
+					this.angle += rotationAmount * Math.PI/180;
+				}
+
+				this.CWRotate = function(rotationAmount){
+					this.angle -= rotationAmount * Math.PI/180;
+				}
+
+			};
+
+			var printAsteroid = function(asteroid){
+				point1XValue = Math.cos(asteroid.angle + 0) * asteroid.randNumber1;
+				point1YValue = Math.sin(asteroid.angle + 0) * asteroid.randNumber1;
+				point2XValue = Math.cos(asteroid.angle + Math.PI/8) * asteroid.randNumber2;
+				point2YValue = Math.sin(asteroid.angle + Math.PI/8) * asteroid.randNumber2;
+				point3XValue = Math.cos(asteroid.angle + Math.PI/4) * asteroid.randNumber3;
+				point3YValue = Math.sin(asteroid.angle + Math.PI/4) * asteroid.randNumber3;
+				point4XValue = Math.cos(asteroid.angle + 3 * Math.PI/8) * asteroid.randNumber4;
+				point4YValue = Math.sin(asteroid.angle + 3 * Math.PI/8) * asteroid.randNumber4;
+				point5XValue = Math.cos(asteroid.angle + Math.PI/2) * asteroid.randNumber5;
+				point5YValue = Math.sin(asteroid.angle + Math.PI/2) * asteroid.randNumber5;
+				point6XValue = Math.cos(asteroid.angle + 5 * Math.PI/8) * asteroid.randNumber6;
+				point6YValue = Math.sin(asteroid.angle + 5 * Math.PI/8) * asteroid.randNumber6;
+				point7XValue = Math.cos(asteroid.angle + 6 * Math.PI/8) * asteroid.randNumber7;
+				point7YValue = Math.sin(asteroid.angle + 6 * Math.PI/8) * asteroid.randNumber7;
+				point8XValue = Math.cos(asteroid.angle + 7 * Math.PI/8) * asteroid.randNumber8;
+				point8YValue = Math.sin(asteroid.angle + 7 * Math.PI/8) * asteroid.randNumber8;
+				point9XValue = Math.cos(asteroid.angle + Math.PI) * asteroid.randNumber9;
+				point9YValue = Math.sin(asteroid.angle + Math.PI) * asteroid.randNumber9;
+				point10XValue = Math.cos(asteroid.angle + 9 * Math.PI/8) * asteroid.randNumber10;
+				point10YValue = Math.sin(asteroid.angle + 9 * Math.PI/8) * asteroid.randNumber10;
+				point11XValue = Math.cos(asteroid.angle + 10 * Math.PI/8) * asteroid.randNumber11;
+				point11YValue = Math.sin(asteroid.angle + 10 * Math.PI/8) * asteroid.randNumber11;
+				point12XValue = Math.cos(asteroid.angle + 11 * Math.PI/8) * asteroid.randNumber12;
+				point12YValue = Math.sin(asteroid.angle + 11 * Math.PI/8) * asteroid.randNumber12;
+				point13XValue = Math.cos(asteroid.angle + 12 * Math.PI/8) * asteroid.randNumber13;
+				point13YValue = Math.sin(asteroid.angle + 12 * Math.PI/8) * asteroid.randNumber13;
+				point14XValue = Math.cos(asteroid.angle + 13 * Math.PI/8) * asteroid.randNumber14;
+				point14YValue = Math.sin(asteroid.angle + 13 * Math.PI/8) * asteroid.randNumber14;
+				point15XValue = Math.cos(asteroid.angle + 14 * Math.PI/8) * asteroid.randNumber15;
+				point15YValue = Math.sin(asteroid.angle + 14 * Math.PI/8) * asteroid.randNumber15;
+				point16XValue = Math.cos(asteroid.angle + 15 * Math.PI/8) * asteroid.randNumber16;
+				point16YValue = Math.sin(asteroid.angle + 15 * Math.PI/8) * asteroid.randNumber16;
+				context.beginPath();
+				context.moveTo(asteroid.xCenter + point1XValue, asteroid.yCenter + point1YValue);
+				context.lineTo(asteroid.xCenter + point2XValue, asteroid.yCenter + point2YValue);
+				context.lineTo(asteroid.xCenter + point3XValue, asteroid.yCenter + point3YValue);
+				context.lineTo(asteroid.xCenter + point4XValue, asteroid.yCenter + point4YValue);
+				context.lineTo(asteroid.xCenter + point5XValue, asteroid.yCenter + point5YValue);
+				context.lineTo(asteroid.xCenter + point6XValue, asteroid.yCenter + point6YValue);
+				context.lineTo(asteroid.xCenter + point7XValue, asteroid.yCenter + point7YValue);
+				context.lineTo(asteroid.xCenter + point8XValue, asteroid.yCenter + point8YValue);
+				context.lineTo(asteroid.xCenter + point9XValue, asteroid.yCenter + point9YValue);
+				context.lineTo(asteroid.xCenter + point10XValue, asteroid.yCenter + point10YValue);
+				context.lineTo(asteroid.xCenter + point11XValue, asteroid.yCenter + point11YValue);
+				context.lineTo(asteroid.xCenter + point12XValue, asteroid.yCenter + point12YValue);
+				context.lineTo(asteroid.xCenter + point13XValue, asteroid.yCenter + point13YValue);
+				context.lineTo(asteroid.xCenter + point14XValue, asteroid.yCenter + point14YValue);
+				context.lineTo(asteroid.xCenter + point15XValue, asteroid.yCenter + point15YValue);
+				context.lineTo(asteroid.xCenter + point16XValue, asteroid.yCenter + point16YValue);
+				context.lineTo(asteroid.xCenter + point1XValue, asteroid.yCenter + point1YValue);
+				context.stroke();
+
+			};
+
+			var bullet = function(xCoord, yCoord, angle)
+				{
+					this.xCoord = xCoord;
+					this.yCoord = yCoord;
+					this.angle = angle;
+					console.log('XCoord: ' + xCoord);
+					console.log('YCoord: ' + yCoord);
+					console.log('Bullet Angle: ' + angle);
+				};
+
+			var printBullet = function(bullet)
+			{
+				var bulletBaseX = bullet.xCoord;
+				var bulletBaseY = bullet.yCoord;
+				var bulletTipX = bulletBaseX + Math.cos(bullet.angle) * 3;
+				var bulletTipY = bulletBaseX + Math.sin(bullet.angle) * 3;
+				context.moveTo(bulletBaseX, bulletBaseY);
+				context.lineTo(bulletTipX, bulletTipY);
+				context.stroke();
+			};
+
+			var atEdge = function(xTip, yTip){
+				if (xTip >= 1500 || xTip <= 0)
+					{return true;}
+				else if (yTip <= 0 || yTip >= 700)
+					{return true;}
+				else {return false;}
+			}
+
+			var ship = function(xCenter, yCenter, angle) 
+			{
+				this.xCenter = xCenter;
+				this.yCenter = yCenter;
+				this.angle = angle * (Math.PI/180);
+				this.size = 20;
+				      
+				this.accelerationFlag = false;
+				this.turboFlagOn = false;
+				this.CWRotateFlag = false;
+				this.CCWRotateFlag = false;
+				this.turboCounter = false;
+				this.accelerateShip = function() {
+					this.xTip = this.xCenter + Math.cos(this.angle) * (this.size/2);
+					this.yTip = this.yCenter - Math.sin(this.angle) * (this.size/2);
+					
+					if (!atEdge(this.xTip, this.yTip)){
+						this.yCenter -= Math.sin(this.angle) * 2;
+						this.xCenter += Math.cos(this.angle) * 2;
+
+					}
+
+				};
+				this.turboMove = function() {
+					if (!atEdge(this.xTip, this.yTip)){
+						this.yCenter -= Math.sin(this.angle) * 4;
+						this.xCenter += Math.cos(this.angle) * 4;
+					}
+				};
+				this.CCWRotate = function(){
+					this.angle += (Math.PI/60);
+				};
+				this.CWRotate = function(){
+					this.angle -= (Math.PI/60);
+				};
+			};	
+
+
+			var printShip = function(ship)
+			{
+				var xTip = ship.xCenter + Math.cos(ship.angle) * (ship.size/2);
+				var yTip = ship.yCenter - Math.sin(ship.angle) * (ship.size/2);
+				var shipBaseCenterXPnt = ship.xCenter - Math.cos(ship.angle) * 20;
+				var shipBaseCenterYPnt = ship.yCenter + Math.sin(ship.angle) * 20; 
+				var shipBaseLength = (80/Math.sqrt(3));
+				var halfBaseShipLength = (40 * Math.sqrt(3) - 40)/(3+2*Math.sqrt(3) + 1);
+				var leftWingAngle = (Math.PI/2) + ship.angle;
+				var rightWingAngle = leftWingAngle;
+				var leftWingXPnt = shipBaseCenterXPnt + Math.cos(leftWingAngle) * (halfBaseShipLength);
+				var leftWingYPnt = shipBaseCenterYPnt - Math.sin(leftWingAngle) * (halfBaseShipLength);
+				var rightWingXPnt = shipBaseCenterXPnt - Math.cos(rightWingAngle) * (halfBaseShipLength);
+				var rightWingYPnt = shipBaseCenterYPnt + Math.sin(rightWingAngle) * (halfBaseShipLength);
+				context.beginPath();
+				context.moveTo(xTip,yTip);
+				context.lineTo(leftWingXPnt, leftWingYPnt);
+				context.lineTo(rightWingXPnt, rightWingYPnt);
+				context.lineTo(xTip,yTip);
+				context.stroke();
+
+				//console.log('Angle of Ship: ' + spaceShip1.angle * 180/Math.PI);
+			};
+
+
+
+
+			gameloop = function(){
+				context.clearRect(0, 0, c.width, c.height);
+				if (spaceShip1.accelerationFlag == true) {
+					spaceShip1.accelerateShip();
+					if (spaceShip1.turboFlagOn == true)
+					{
+						spaceShip1.turboMove();
+					}
+				}
+
+				if (spaceShip1.CCWRotateFlag == true)
+					spaceShip1.CCWRotate();
+
+				if (spaceShip1.CWRotateFlag == true)
+					spaceShip1.CWRotate();
+
+				asteroid1.CCWRotate(.25);
+				asteroid2.CWRotate(.35);
+				asteroid3.CCWRotate(.55);
+				asteroid4.CWRotate(.8);
+				asteroid5.CCWRotate(.9);
+				asteroid6.CWRotate(.05);
+				asteroid7.CCWRotate(.75);
+				asteroid8.CWRotate(.3);
+				asteroid9.CCWRotate(1);
+				asteroid10.CWRotate(.5);
+				asteroid11.CCWRotate(.8);
+				asteroid12.CWRotate(.5);
+
+				printShip(spaceShip1);
+
+				printAsteroid(asteroid1);
+				printAsteroid(asteroid2);
+				printAsteroid(asteroid3);
+				printAsteroid(asteroid4);
+				printAsteroid(asteroid5);
+				printAsteroid(asteroid6);
+				printAsteroid(asteroid7);
+				printAsteroid(asteroid8);
+				printAsteroid(asteroid9);
+				printAsteroid(asteroid10);
+				printAsteroid(asteroid11);
+				printAsteroid(asteroid12);
+
+
+				//printBullet(bullet1);
+				setTimeout(gameloop, 10);
+			};
+			
+			var c = document.getElementById("myCanvas");
+			c.width = 1500;
+			c.height = 700;
+			var context = c.getContext("2d");
+			var spaceShip1 = new ship(580, 200, 90);
+			var asteroid1 = new asteroid(700, 200, 0);
+			var asteroid2 = new asteroid(100, 150, 0);
+			var asteroid3 = new asteroid(900, 400, 0);
+			var asteroid4 = new asteroid(1500, 600, 0);
+			var asteroid5 = new asteroid(1300, 430, 0);
+			var asteroid6 = new asteroid(1100, 170, 0);
+			var asteroid7 = new asteroid(900, 555, 0);
+			var asteroid8 = new asteroid(550, 400, 0);
+			var asteroid9 = new asteroid(330, 430, 0);
+			var asteroid10 = new asteroid(100, 230, 0);
+			var asteroid11 = new asteroid(1200, 280, 0);
+			var asteroid12 = new asteroid(1000, 650, 0);
+			gameloop();
+
+			
+
+
+
+
+		
+
+
+
+
+		</script>
+	</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
